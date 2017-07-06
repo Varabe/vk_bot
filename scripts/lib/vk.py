@@ -1,11 +1,13 @@
 from lib.config import sleep_time
-import requests
-import time
+from requests import post
+from lib import messages
+from time import sleep
 import json
 
 
 class Vk:
 	api_url = "https://api.vk.com/method/{}"
+
 	def __init__(self, token):
 		self.token = token
 
@@ -34,7 +36,18 @@ class Response(dict):
 	def __new__(self):
 		if "response" in self:
 			return self['response']
-		elif "error" in response:
+		elif "error" in self:
 			raise VkError(self['error'])
 		else:
-			return dict(self)
+			return self
+
+
+class LongPollResponse(Response):
+	def __init__(self, response):
+		super().__init__(response)
+
+	def handle(self):
+		if "updates" in self:
+			message_list = messages.get(self['updates'])
+			for message in message_list:
+				message.handle()
