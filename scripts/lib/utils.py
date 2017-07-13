@@ -4,6 +4,7 @@ from os.path import realpath
 from os import chdir
 
 from lib.config import data_folder
+from lib.database import Database
 from lib.vk import Vk
 
 
@@ -17,7 +18,7 @@ def makeSession(token_path):
 def setCurrentDirectory():
 	""" Требуется при вызове скрипта не из его директории
 
-		Меняет директорию на GM4/scripts вне зависимости
+		Меняет директорию на scripts вне зависимости
 		от того, где они находятся, и где был вызван скрипт
 	"""
 	path = realpath(__file__)
@@ -26,6 +27,11 @@ def setCurrentDirectory():
 	chdir(path)
 
 
+def getCurrentUserId(vk_session):
+	return vk_session("users.get")[0]['id']
+	
+
 setCurrentDirectory()
 vk = makeSession(data_folder + "token.txt")
-my_id = vk("users.get")[0]['uid']
+my_id = getCurrentUserId(vk)
+database = Database(data_folder + "data.cfg")

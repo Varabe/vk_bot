@@ -1,71 +1,83 @@
-""" Набор средств для упрощенной работы с вконтакте """
-
-from vk.exceptions import VkAPIError
-from vk import Session, API
-
-from os.path import realpath
-from os import chdir
-
-from lib.config import sleep_time, group_id, data_folder
-from lib.database import Database
-from time import sleep
+from re import search
 
 
-def getApi(token_path):
-	""" Логинится в вк и возвращает готовую к работе сессию """
-	with open(token_path) as f:
-		token = f.read().strip()
-		session = Session(access_token=token)
-		return API(session, v='5.52', lang='ru')
+availible_commands = {
+	"help":help_,
+	"print":print_,
+}
 
 
-def getToken():
-	""" Создает токен для заданного приложения """
-	import webbrowser as wb
-	client_id = 5747467    # Id приложения
-	scope = 2047391        # Код доступа, который мы запрашиваем
-	standard_config = "display=page&redirect_uri=http://vk.com&response_type=token&v=5.60"
-	url = "https://oauth.vk.com/authorize?"
-	url += "client_id={}&{}&scope={}".format(
-		client_id, standard_config, scope)
-	wb.open(url, new=2)
+def get(text):
+	if "exit" in text:
+		raise SystemExit
+	if search(r"\w+\(\$?\w*\)", text):
+		return callFunction
+	elif "$" in text and "=" in text:
+		return makeVariable
 
 
-def vk(method, **kwargs):
-	""" Делает запрос к вк, ожидая необходимое время """
-	sleep(sleep_time)
-	return method(**kwargs)
+def callFunction(text):
+	lower_case = text.lower()
+	function = lower_case[:text.index("(")]
+	if function in availible_commands:
+		command = availible_commands[function]
+		args = getArgs(text)
+		return availible_commands[function](*args)
+	else:
+		raise BotError("Function {} not found.".format(function))
 
 
-def vkCaptcha(method, **kwargs):
-	""" Не позволяет программе вылететь, когда вк просит ввести капчу """
-	try:
-		return vk(method, **kwargs)
-	except VkAPIError:
-		sleep(10)
-		return vkCaptcha(method, **kwargs)
+def getArgs(text):
+	args = text[text.index("(") + 1:text.index(")")]
+	args = args.split(",")
+	return [arg.strip() for arg in args]
 
 
-def getBanned(group_id):
-	""" Возвращает список забаненных в сообществе пользователей """
-	bans = vk(api.groups.getBanned, group_id=group_id)['items']
-	banned = [user['id'] for user in bans if "id" in user]
-	return banned
+def makeVariable(text):
+	var, val = text.split("=", 1)
+	var = getVariableFromString(var)
+	val = val.strip()
+	checkVariableName(var)
+	checkVariableValue(val)
+	database.makeVariable(var, val)
+	return "{} created.".format(var)
 
 
-def setCurrentDirectory():
-	""" Требуется при вызове скрипта не из его директории
-
-		Меняет директорию на GM4/scripts вне зависимости
-		от того, где они находятся, и где был вызван скрипт
-	"""
-	path = realpath(__file__)
-	index = path.index("/lib")
-	path = path[:index]
-	chdir(path)
+def getVariableFromString(var):
+	return var[var.index("$") + 1:].strip()
 
 
-setCurrentDirectory()
-api = getApi(data_folder + "token.txt")
-ban_list = getBanned(group_id)
-database = Database(data_folder + "database.xml")
+def checkVariableName(name):
+	pattern = r"[A-Za-z]\w{0, 15}"
+	if not search(pattern, name):
+		raise BotError("Variable name is incorrect format.")
+
+
+def checkVariableValue(value):
+	if len(value) > 100:
+		raise BotError("Variable value is too long.")
+
+
+def help_(text):
+	pass
+
+
+def print_(text):
+	if text.startswith("$"):
+		variable_name = getVariableFromString(text)
+		return database.get(variable_name)
+	else:
+		return text
+
+
+def searchDogs(group_id):
+	pass
+
+
+def removeDogs(group_id):
+	pass
+
+
+class BotError(Exception):
+	def __init__(self, message):
+		super().__init__(message)

@@ -21,13 +21,6 @@ class Vk:
 		return Response(post(method, kwargs))
 
 
-class VkError(Exception):
-	def __init__(self, error):
-		message = "\nMessage: {}\nParameters: {}".format(
-			error['error_msg'], error['request_params'])
-		super().__init__(message)
-
-
 class Response(dict):
 	def __init__(self, response):
 		json_dict = json.loads(response.text)
@@ -51,3 +44,10 @@ class LongPollResponse(Response):
 			message_list = messages.get(self['updates'])
 			for message in message_list:
 				message.handle()
+
+
+class VkError(Exception):
+	def __init__(self, error):
+		message = "\nMessage: {}\nParameters: {}".format(
+			error['error_msg'], error['request_params'])
+		super().__init__(message)

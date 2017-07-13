@@ -1,37 +1,32 @@
 """ Оповещение администратора о возникших ошибках """
 
-from traceback import format_exception, format_exc
+from traceback import format_exception
+from contextlib import contextmanager
 from lib.config import emergency_id
-from lib.commands import vk, api
+from lib.utils import vk
 
 
-class ErrorManager:
-	""" Упрощенное оповещение об ошибках
-
-		str name: название скрипта (обычно укороченное)
-		Использование: with ErrorManager(name): main()
-	"""
-	def __init__(self, name):
-		self.name = name
-
-	def __enter__(self):
-		pass
-
-	def __exit__(self, *args):
-		if args[0] is not None:
-			sendErrorMessage(self.name)
+@contextmanager
+def ErrorManager(script_name):
+	""" Упрощенное оповещение об ошибках """
+	try:
+		yield
+	except Exception as e:
+		sendErrorMessage(script_name, e)
+		raise e
 
 
-def sendErrorMessage(name, exception=None):
-	""" Использует либо полученную ошибку, либо ту, что возникла последней """
-	exception = format_error(exception)
-	message = "{}:\n{}".format(name, exception)
-	vk(api.messages.send, user_id=emergency_id, message=message)
+def sendErrorMessage(name, exception):
+	""" Отправляет текст ошибки на emergency_id """
+	exception = formatError(exception)
+	message = makeMessage(name, exception)
+	vk("messages.send", user_id=emergency_id, message=message)
 
 
-def format_error(error):
-	if error is not None:
-		error_info = format_exception(type(error), error, error.__traceback__)
-		return "".join(error_info)
-	else:
-		return format_exc()
+def formatError(error):
+	error_info = format_exception(type(error), error, error.__traceback__)
+	return "".join(error_info)
+
+
+def makeMessage(name, exception):
+	return "{}:\n{}".format(name, exception)
