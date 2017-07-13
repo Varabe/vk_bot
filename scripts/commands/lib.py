@@ -1,9 +1,32 @@
 from re import search
 
 
+class Command:
+	def __init__(self, text):
+		self.command, *self.args = self.extractText(text)
+
+	def __new__(self):
+		command, args = self.command, self.args
+		return lambda: command(*args)
+
+	def extractText(self, text):
+		command_name, *args = text.split(" ")
+		args = self.makeArgs(args)
+		command = self.makeCommand(command_name)
+
+	def makeArgs(self, args):
+		return [getVar(a) for a in args if "$" in a else a]
+
+	def makeCommand(self, name):
+		if name in availible_commands:
+			return availible_commands[name]
+		else:
+			raise BotError("Command {} not found".format(name))
+
+
 availible_commands = {
-	"help":help_,
-	"print":print_,
+	"help":help,
+	"print":print,
 }
 
 
@@ -58,11 +81,11 @@ def checkVariableValue(value):
 		raise BotError("Variable value is too long.")
 
 
-def help_(text):
+def help(text):
 	pass
 
 
-def print_(text):
+def print(text):
 	if text.startswith("$"):
 		variable_name = getVariableFromString(text)
 		return database.get(variable_name)
