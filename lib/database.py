@@ -31,5 +31,4 @@ class Database(ConfigParser):
 		self.save()
 
 	def iterVars(self):
-		for name, value in self.vars.items():
-			yield name, value
+		return iter(self.vars.items())

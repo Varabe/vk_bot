@@ -1,6 +1,6 @@
 from lib.config import allowed_people
-from commands.errors import BotError
-from commands.lib import getCommand
+from lib.commands.lib import getCommand
+from lib.commands.errors import BotError
 from lib.utils import vk
 
 from logging import getLogger

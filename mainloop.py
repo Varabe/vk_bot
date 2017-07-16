@@ -38,7 +38,7 @@ class LongPollServer:
 				"ts":self.ts, "wait":wait_time,
 				"version":version}
 
-	def mainLoop(self, event_list):
+	def mainLoop(self):
 		while True:
 			response = post(self.url, self.kwargs)
 			response = getResponseDict(response)

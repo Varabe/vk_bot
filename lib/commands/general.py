@@ -1,4 +1,4 @@
-from commands.errors import BotError
+from lib.commands.errors import BotError
 from lib.utils import database
 
 from logging import getLogger
@@ -32,9 +32,9 @@ def delVar(*args):
 
 def deleteVariable(name):
 	database.delVar(name)
-	message = "\n'{}' has been deleted.".format(name)
+	message = "'{}' deleted".format(name)
 	logger.debug(message)
-	return message
+	return "\n" + message
 
 
 def print_(*args):
@@ -47,7 +47,7 @@ def makeVariable(name, value):
 	checkVariableName(name)
 	checkVariableValue(value)
 	database.setVar(name, value)
-	return "{} created.".format(name)
+	return "'{}' created.".format(name)
 
 
 def checkVariableName(name):

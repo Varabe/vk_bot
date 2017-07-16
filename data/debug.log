@@ -1,0 +1,16 @@
+bot: Loaded utils
+bot.main: Starting longPolling...
+bot.messages: New message
+bot.commands: Recieved command makeVariable with args ('pidar', 83)
+bot.commands.general: Creating variable pidar
+bot.messages: Responding...
+bot.messages: New message
+bot.commands: Recieved command help_ with args []
+bot.messages: Responding...
+bot.messages: New message
+bot.commands: Recieved command delVar with args [pidar]
+bot.commands.general: 'pidar' deleted
+bot.messages: Responding...
+bot.messages: New message
+bot.commands: Recieved command exit_ with args []
+bot.commands.general: Finishing execution

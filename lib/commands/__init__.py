@@ -1,4 +1,4 @@
-from commands.general import *
+from lib.commands.general import *
 
 availible_commands = {
 	"del":delVar,

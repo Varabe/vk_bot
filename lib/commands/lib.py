@@ -1,5 +1,5 @@
-from commands import availible_commands
-from commands.errors import BotError
+from lib.commands import availible_commands
+from lib.commands.errors import BotError
 from lib.utils import database
 from logging import getLogger
 
