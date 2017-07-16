@@ -1,6 +1,5 @@
 from lib.config import sleep_time
 from requests import post
-from lib import messages
 from time import sleep
 import json
 
@@ -8,42 +7,29 @@ import json
 class Vk:
 	api_url = "https://api.vk.com/method/{}"
 
-	def __init__(self, token):
+	def __init__(self, token, version="5.67"):
 		self.token = token
+		self.version = version
 
 	def __call__(self, method, **kwargs):
 		kwargs['access_token'] = self.token
+		kwargs['v'] = self.version
 		method = self.api_url.format(method)
 		return self.makeRequest(method, **kwargs)
 
 	def makeRequest(self, method, **kwargs):
 		sleep(sleep_time)
-		return Response(post(method, kwargs))
+		return getResponseDict(post(method, kwargs))
 
 
-class Response(dict):
-	def __init__(self, response):
-		json_dict = json.loads(response.text)
-		super().__init__(json_dict)
-
-	def __new__(self):
-		if "response" in self:
-			return self['response']
-		elif "error" in self:
-			raise VkError(self['error'])
-		else:
-			return self
-
-
-class LongPollResponse(Response):
-	def __init__(self, response):
-		super().__init__(response)
-
-	def handle(self):
-		if "updates" in self:
-			message_list = messages.get(self['updates'])
-			for message in message_list:
-				message.handle()
+def getResponseDict(response):
+	json_dict = json.loads(response.text)
+	if "response" in json_dict:
+		return json_dict['response']
+	elif "error" in json_dict:
+		raise VkError(json_dict['error'])
+	else:
+		return json_dict
 
 
 class VkError(Exception):

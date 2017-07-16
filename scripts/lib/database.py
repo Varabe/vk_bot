@@ -17,15 +17,19 @@ class Database(ConfigParser):
 
 	def save(self):
 		with open(self.path, "w") as f:
-			self.write(file)
+			self.write(f)
 
-	def getVar(name):
-		return self.vars[name]
+	def getVar(self, name):
+		return self.vars.get(name)
 
-	def setVar(name, value):
+	def setVar(self, name, value):
 		self.vars[name] = str(value)
 		self.save()
 
-	def delVar(name):
+	def delVar(self, name):
 		del self.vars[name]
 		self.save()
+
+	def iterVars(self):
+		for name, value in self.vars.items():
+			yield name, value

@@ -1,17 +1,29 @@
-from lib.vk import LongPollResponse
-from threading import Thread
+from logging import getLogger
 from requests import post
+
+from lib.messages import iterMessages
+from lib.errors import ErrorManager
+from lib.vk import getResponseDict
 from lib.utils import vk
+
+
+logger = getLogger("bot.main")
+
+
+def main():
+	server = LongPollServer()
+	logger.debug("Starting longPolling...")
+	server.mainLoop()
 
 
 class LongPollServer:
 	def __init__(self):
-		self.server, self.key, self.ts = self.getLongPollingServer()
+		self.server, self.key, self.ts = self.getServerInfo()
 		self.kwargs = self.makeConfig()
 		self.url = self.makeUrl(self.server)
 
 	@staticmethod
-	def getLongPollingServer():
+	def getServerInfo():
 		response = vk("messages.getLongPollServer")
 		return response['server'], response['key'], response['ts']
 
@@ -26,37 +38,23 @@ class LongPollServer:
 				"ts":self.ts, "wait":wait_time,
 				"version":version}
 
-	def mainLoop(self):
+	def mainLoop(self, event_list):
 		while True:
 			response = post(self.url, self.kwargs)
-			response = LongPollResponse(response.text)
-			Thread(target=response.handle).start()
+			response = getResponseDict(response)
 			self.kwargs['ts'] = response['ts']
+			# with TEST_LOCK:
+			# event_list.append(response)
+			handle(response)
 
 
-def main():
-	server = LongPollServer()
-	server.mainLoop()
-
-# [4, 205179, 49, 98216156, 1499363343, 'к']
+def handle(response):
+	if "updates" in response:
+		message_list = iterMessages(response['updates'])
+		for message in message_list:
+			message.handle()
 
 
 if __name__ == "__main__":
-	# with ErrorManager("MultiThread bot"):
-	main()
-
-# def prnt():
-# 	print(1)
-# 	print(2)
-
-# def wait():
-# 	sleep(1)
-# 	print(3)
-# 	sleep(1)
-
-# a = Thread(target=wait, args=())
-# b = Thread(target=prnt)
-
-# a.start()
-# b.start()
-# print("starts finished")
+	with ErrorManager("MultiThread bot"):
+		main()
