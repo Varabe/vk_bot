@@ -1,4 +1,4 @@
-from lib.commands.errors import BotError
+from lib.commands.errors import BotError, UserExit
 from lib.utils import database
 
 from logging import getLogger
@@ -9,7 +9,7 @@ logger = getLogger("bot.commands.general")
 
 def exit_():
 	logger.debug("Finishing execution")
-	raise SystemExit
+	raise UserExit
 
 
 def help_():
