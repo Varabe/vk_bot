@@ -1,7 +1,7 @@
+from logging import getLogger
+
 from lib.commands.errors import BotError, UserExit
 from lib.utils import database
-
-from logging import getLogger
 
 
 logger = getLogger("bot.commands.general")

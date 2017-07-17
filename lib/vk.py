@@ -1,8 +1,8 @@
-from lib.config import sleep_time
-
 from requests import post
 from time import sleep
 import json
+
+from lib.config import sleep_time
 
 
 class Vk:

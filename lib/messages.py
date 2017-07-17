@@ -1,9 +1,9 @@
-from lib.config import allowed_people
-from lib.commands.lib import getCommand
-from lib.commands.errors import BotError
-from lib.utils import vk
-
 from logging import getLogger
+
+from lib.commands.errors import BotError
+from lib.commands.lib import getCommand
+from lib.config import allowed_people
+from lib.utils import vk
 
 
 logger = getLogger("bot.messages")

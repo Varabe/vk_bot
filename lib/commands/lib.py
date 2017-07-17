@@ -1,8 +1,9 @@
+from logging import getLogger
+
 from lib.commands.general import makeVariable
 from lib.commands import availible_commands
 from lib.commands.errors import BotError
 from lib.utils import database
-from logging import getLogger
 
 
 logger = getLogger("bot.commands")
