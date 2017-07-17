@@ -1,4 +1,5 @@
 from lib.config import sleep_time
+
 from requests import post
 from time import sleep
 import json
@@ -37,3 +38,27 @@ class VkError(Exception):
 		message = "\nMessage: {}\nParameters: {}".format(
 			error['error_msg'], error['request_params'])
 		super().__init__(message)
+
+
+class LongPollServer:
+	def __init__(self, vk_session, version=2, wait_time=30):
+		self.vk = vk_session
+		self.version = version
+		self.wait_time = wait_time
+		self.server, self.key, self.ts = self.getServerInfo()
+		self.kwargs = self.makeConfig()
+		self.url = "https://" + self.server
+
+	def getServerInfo(self):
+		response = self.vk("messages.getLongPollServer")
+		return response['server'], response['key'], response['ts']
+
+	def makeConfig(self):
+		return {"act":"a_check", "key":self.key, "ts":self.ts,
+				"wait":self.wait_time, "version":self.version}
+
+	def makeLongPollRequest(self):
+		response = post(self.url, self.kwargs)
+		response = getResponseDict(response)
+		self.kwargs['ts'] = response['ts']
+		return response

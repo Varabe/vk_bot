@@ -8,18 +8,36 @@ logger = getLogger("bot.commands.general")
 
 
 def exit_():
+	""" Завершение работы бота """
 	logger.debug("Finishing execution")
 	raise UserExit
 
 
 def help_():
+	""" Получение информации о доступных командах и переменных """
+	command_list = makeCommandList()
+	var_list = makeVariableList()
+	return "{}\n\n{}".format(command_list, var_list)
+
+
+def makeCommandList():
+	""" Рекурсивное импортирование невозможно на уровне модуля """
+	from lib.commands import availible_commands
+	command_list = "Commands:"
+	for name, function in availible_commands.items():
+		command_list += "\n* {}:\n{}\n".format(name, function.__doc__)
+	return command_list
+
+
+def makeVariableList():
 	variable_list = "Variables:"
 	for name, value in database.iterVars():
-		variable_list += "\n{}: {}".format(name, value)
+		variable_list += "\n{} = {}".format(name, value)
 	return variable_list
 
 
 def delVar(*args):
+	""" Удалить одну или несколько переменных """
 	string = ""
 	for arg in args:
 		if database.getVar(arg.name):
@@ -38,6 +56,7 @@ def deleteVariable(name):
 
 
 def print_(*args):
+	""" Напечатать значения аргументов """
 	args = [arg.value for arg in args]
 	return "\n".join(args)
 

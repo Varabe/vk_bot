@@ -1,8 +1,15 @@
-[2017-07-17 02:52:13,486] bot: Loaded utils
-[2017-07-17 02:52:14,912] bot.main: Starting longPolling...
-[2017-07-17 02:52:22,694] bot.messages: New message
-[2017-07-17 02:52:22,697] bot.commands: Recieved command help_ with args []
-[2017-07-17 02:52:23,288] bot.messages: New message
-[2017-07-17 02:52:23,288] bot.commands: Recieved command exit_ with args []
-[2017-07-17 02:52:23,288] bot.commands.general: Finishing execution
-[2017-07-17 02:52:23,289] bot.main: EventLoop finished
+[2017-07-17 21:57:10,345] bot: Loaded utils
+[2017-07-17 21:57:11,353] bot.main: Starting longPolling...
+[2017-07-17 21:57:23,791] bot.messages: New message
+[2017-07-17 21:57:23,792] bot.commands.errors: Command 'makevariable' not found
+[2017-07-17 21:57:23,793] bot.messages: Responding...
+[2017-07-17 21:57:30,631] bot.messages: New message
+[2017-07-17 21:57:30,636] bot.commands.errors: Command 'helpo' not found
+[2017-07-17 21:57:30,636] bot.messages: Responding...
+[2017-07-17 21:57:33,067] bot.messages: New message
+[2017-07-17 21:57:33,068] bot.commands: Recieved command help_ with args []
+[2017-07-17 21:57:33,069] bot.messages: Responding...
+[2017-07-17 21:57:50,612] bot.messages: New message
+[2017-07-17 21:57:50,613] bot.commands: Recieved command exit_ with args []
+[2017-07-17 21:57:50,613] bot.commands.general: Finishing execution
+[2017-07-17 21:57:50,613] bot.main: EventLoop finished

@@ -1,3 +1,4 @@
+from lib.commands.general import makeVariable
 from lib.commands import availible_commands
 from lib.commands.errors import BotError
 from lib.utils import database
@@ -26,7 +27,7 @@ def getCommand(text):
 	text = [i for i in text.split(" ") if i]
 	if "=" in text:
 		""" name = value """
-		command = availible_commands["makevariable"]
+		command = makeVariable
 		name, _, value = text
 		args = name, Variable(value)
 	else:

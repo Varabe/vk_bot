@@ -1,11 +1,10 @@
 from threading import Thread, Event, Lock, active_count
 from logging import getLogger
-from requests import post
 
 from lib.commands.errors import UserExit
 from lib.errors import sendErrorMessage
 from lib.messages import iterMessages
-from lib.vk import getResponseDict
+from lib.vk import LongPollServer
 from lib.utils import vk
 
 
@@ -13,34 +12,11 @@ logger = getLogger("bot.main")
 
 
 def main():
-	server = LongPollServer()
+	server = LongPollServer(vk)
 	manager = ThreadManager(max_count=5)
 	logger.debug("Starting longPolling...")
 	Thread(target=manager.eventCheckingLoop).start()
 	Thread(target=manager.longPollingLoop, args=(server, ), daemon=True).start()
-
-
-class LongPollServer:
-	def __init__(self):
-		self.server, self.key, self.ts = self.getServerInfo()
-		self.kwargs = self.makeConfig()
-		self.url = self.makeUrl(self.server)
-
-	@staticmethod
-	def getServerInfo():
-		response = vk("messages.getLongPollServer")
-		return response['server'], response['key'], response['ts']
-
-	@staticmethod
-	def makeUrl(server):
-		return "https://" + server
-
-	def makeConfig(self):
-		wait_time = 10
-		version = 2
-		return {"act":"a_check", "key":self.key,
-				"ts":self.ts, "wait":wait_time,
-				"version":version}
 
 
 class ThreadManager:
@@ -59,25 +35,20 @@ class ThreadManager:
 					with self.event_lock:
 						event = self.events.pop(0)
 						if "updates" in event:
-							event_thread = Thread(
-								target=self.handleEvent,
-								args=(event['updates'],),
-								daemon=True)
-							event_thread.start()
+							Thread(target=self.handleEvent,
+								args=(event,), daemon=True).start()
 			self.new_event.clear()
 			self.new_event.wait()
 		self.finish()
 
 	def longPollingLoop(self, server):
-		while self.exception is None:
-			response = post(server.url, server.kwargs)
-			response = getResponseDict(response)
-			server.kwargs['ts'] = response['ts']
+		while True:
+			response = server.makeLongPollRequest()
 			self.events.append(response)
 			self.new_event.set()
 
-	def handleEvent(self, updates):
-		messages = iterMessages(updates)
+	def handleEvent(self, event):
+		messages = iterMessages(event['updates'])
 		try:
 			for message in messages:
 				message.handle()
