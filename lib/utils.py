@@ -14,12 +14,13 @@ def makeLogger():
 	logger = logging.getLogger('bot')
 	logger.setLevel("DEBUG")
 	fh = logging.FileHandler(data_folder + 'debug.log', mode="w")
-	ch = logging.StreamHandler(stream=sys.stdout)
-	formatter = logging.Formatter('%(name)s: %(message)s')
-	fh.setFormatter(formatter)
-	ch.setFormatter(formatter)
+	sh = logging.StreamHandler(stream=sys.stdout)
+	fh_formatter = logging.Formatter('[%(asctime)s] %(name)s: %(message)s')
+	sh_formatter = logging.Formatter('%(name)s: %(message)s')
+	fh.setFormatter(fh_formatter)
+	sh.setFormatter(sh_formatter)
 	logger.addHandler(fh)
-	logger.addHandler(ch)
+	logger.addHandler(sh)
 	return logger
 
 
