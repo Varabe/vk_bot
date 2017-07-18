@@ -75,7 +75,7 @@ class ThreadManager:
 			for message in messages:
 				message.handle()
 		except Exception as e:
-			logger.exception()
+			logger.exception(e)
 			self.exception = e
 			self.new_event.set()
 
