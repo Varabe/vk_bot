@@ -1,18 +1,21 @@
 from logging import getLogger
 
 from lib.commands.errors import BotError, UserExit
+from lib.commands.lib import ArgCount
 from lib.utils import database
 
 
 logger = getLogger("bot.commands.general")
 
 
+@ArgCount(0)
 def exit_():
 	""" Завершение работы бота """
 	logger.debug("Finishing execution")
 	raise UserExit
 
 
+@ArgCount(0)
 def help_():
 	""" Получение информации о доступных командах и переменных """
 	command_list = makeCommandList()

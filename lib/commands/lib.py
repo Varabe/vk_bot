@@ -9,6 +9,20 @@ from lib.utils import database
 logger = getLogger("bot.commands")
 
 
+class ArgCount:
+	""" Checks if a function got an appropriate amount of args """
+	def __init__(self, function, count):
+		self.function = function
+		self.count = count
+
+	def __call__(self, *args, **kwargs):
+		if len(args) + len(kwargs) == self.count:
+			self.function(*args, **kwargs)
+		else:
+			raise BotError("Incorrect number of args for {}".format(
+				self.function.__name__))
+
+
 class Variable(str):
 	def __init__(self, name):
 		if name.startswith("$"):
