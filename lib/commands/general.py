@@ -10,14 +10,12 @@ logger = getLogger("bot.commands.general")
 
 @argcount(0)
 def exit_():
-	""" Завершение работы бота """
 	logger.debug("Finishing execution")
 	raise UserExit
 
 
 @argcount(0)
 def help_():
-	""" Получение информации о доступных командах и переменных """
 	command_list = makeCommandList()
 	var_list = makeVariableList()
 	return "{}\n\n{}".format(command_list, var_list)
@@ -28,7 +26,7 @@ def makeCommandList():
 	from lib.commands import availible_commands
 	command_list = "Commands:"
 	for name, function in availible_commands.items():
-		command_list += "\n* {}:\n{}\n".format(name, function.__doc__)
+		command_list += "\n* {}:\n{}\n".format(name, function.about)
 	return command_list
 
 
@@ -40,7 +38,6 @@ def makeVariableList():
 
 
 def delVar(*args):
-	""" Удалить одну или несколько переменных """
 	string = ""
 	for arg in args:
 		if database.getVar(arg.name):
@@ -59,7 +56,6 @@ def deleteVariable(name):
 
 
 def print_(*args):
-	""" Напечатать значения аргументов """
 	args = [arg.value for arg in args]
 	return "\n".join(args)
 
@@ -67,7 +63,6 @@ def print_(*args):
 def makeVariable(name, value):
 	logger.debug("Creating variable {}".format(name))
 	checkVariableName(name)
-	checkVariableValue(value)
 	database.setVar(name, value)
 	return "'{}' created.".format(name)
 
@@ -75,8 +70,3 @@ def makeVariable(name, value):
 def checkVariableName(name):
 	if not (3 <= len(name) < 12):
 		raise BotError("Name '{}' is incorrect format.".format(name))
-
-
-def checkVariableValue(value):
-	if len(value) > 100:
-		raise BotError("Variable value is too long.")

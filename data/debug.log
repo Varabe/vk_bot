@@ -1,9 +1,16 @@
-[2017-07-18 14:51:00,490] bot: Loaded utils
-[2017-07-18 14:51:01,428] bot.main: Starting longPolling...
-[2017-07-18 14:51:09,715] bot.messages: New message
-[2017-07-18 14:51:09,716] bot.commands: Recieved command help_ with args []
-[2017-07-18 14:51:09,717] bot.messages: Responding...
-[2017-07-18 14:51:10,421] bot.messages: New message
-[2017-07-18 14:51:10,422] bot.commands: Recieved command exit_ with args []
-[2017-07-18 14:51:10,422] bot.commands.general: Finishing execution
-[2017-07-18 14:51:10,422] bot.events: EventLoop finished
+[2017-07-18 20:45:46,274] bot: Loaded utils
+[2017-07-18 20:45:47,327] bot.main: Starting longPolling...
+[2017-07-18 20:45:58,063] bot.messages: New message: print &quot;Pidar bliad Suka&quot;
+[2017-07-18 20:45:58,065] bot.commands: Recieved command print with args [Pidar bliad Suka]
+[2017-07-18 20:45:59,136] bot.messages: Responded
+[2017-07-18 20:46:18,303] bot.messages: New message: print &quot;Pidar Bliad Suka&quot; Ebat lol
+[2017-07-18 20:46:18,304] bot.commands: Recieved command print with args [Pidar Bliad Suka, Ebat, lol]
+[2017-07-18 20:46:19,248] bot.messages: Responded
+[2017-07-18 20:47:27,227] bot.messages: New message: exit 1
+[2017-07-18 20:47:27,227] bot.commands: Recieved command exit with args [1]
+[2017-07-18 20:47:27,228] bot.commands.errors: Incorrect number of args.
+[2017-07-18 20:47:28,402] bot.messages: Responded
+[2017-07-18 20:47:32,128] bot.messages: New message: exit
+[2017-07-18 20:47:32,129] bot.commands: Recieved command exit with args []
+[2017-07-18 20:47:32,129] bot.commands.general: Finishing execution
+[2017-07-18 20:47:32,129] bot.events: EventLoop finished

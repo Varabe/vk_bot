@@ -10,7 +10,7 @@ logger = getLogger("bot.events")
 
 
 class ThreadManager:
-	""" Центр всей логики, связанной с потоками
+	""" Center of thread logic
 
 		There are two types of active threads: loops and
 		event handlers. While there are only two loops:
@@ -54,7 +54,7 @@ class ThreadManager:
 				self.checkLastEvent()
 			self.new_event.clear()
 			self.new_event.wait()
-		self.finish()
+		logger.debug("EventLoop finished")
 
 	def checkLastEvent(self):
 		if active_count() < self.max_threads:
@@ -75,14 +75,15 @@ class ThreadManager:
 			for message in messages:
 				message.handle()
 		except Exception as e:
-			logger.exception(e)
+			handleException(e)
 			self.exception = e
 			self.new_event.set()
 
-	def finish(self):
-		if type(self.exception) is not UserExit:
-			sendErrorMessage("LongPolling", self.exception)
-		logger.debug("EventLoop finished")
+
+def handleException(e):
+	if type(e) is not UserExit:
+		logger.exception("Exception occured, finishing execution")
+		sendErrorMessage("LongPolling", e)
 
 
 class EventThread(Thread):

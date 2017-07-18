@@ -48,7 +48,7 @@ def getAssignmentArgs(text):
 
 
 def extractArgs(text, argcount=None):
-	if not text: return []
+	text = editVkSpecificChars(text)
 	initial_text = text
 	args = quote_pattern.findall(text)
 	checkQuotes(args)
@@ -59,6 +59,11 @@ def extractArgs(text, argcount=None):
 	args.sort(key=lambda s: initial_text.index(s))
 	args = [Variable(a) for a in args]
 	return args if argcount is None else args[:argcount]
+
+
+def editVkSpecificChars(text):
+	text = text.replace("&quot;", '"')
+	return text
 
 
 def checkQuotes(quotes):

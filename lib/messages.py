@@ -1,8 +1,8 @@
 from logging import getLogger
 
 from lib.commands.errors import BotError
-from lib.commands.lib import getCommand
 from lib.config import allowed_people
+from lib.commands import getCommand
 from lib.utils import vk
 
 
@@ -23,8 +23,8 @@ class Message:
 		self.respond(response_text)
 
 	def respond(self, response_text):
-		logger.debug("Responding...")
 		vk("messages.send", user_id=self.user_id, message=response_text)
+		logger.debug("Responded")
 
 
 def iterMessages(long_poll_updates):
@@ -34,5 +34,5 @@ def iterMessages(long_poll_updates):
 		if update[0] == new_message_code:
 			_, _, status, user_id, _, text = update
 			if status == from_other_user and user_id in allowed_people:
-				logger.debug("New message")
+				logger.debug("New message: {}".format(text))
 				yield Message(user_id, text.strip())
