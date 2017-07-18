@@ -75,12 +75,12 @@ class ThreadManager:
 			for message in messages:
 				message.handle()
 		except Exception as e:
+			logger.exception()
 			self.exception = e
 			self.new_event.set()
 
 	def finish(self):
 		if type(self.exception) is not UserExit:
-			logger.exception(self.exception)
 			sendErrorMessage("LongPolling", self.exception)
 		logger.debug("EventLoop finished")
 
