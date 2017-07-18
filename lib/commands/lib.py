@@ -1,31 +1,33 @@
 from logging import getLogger
 
-from lib.commands.general import makeVariable
-from lib.commands import availible_commands
 from lib.commands.errors import BotError
 from lib.utils import database
+import re as regex
 
 
 logger = getLogger("bot.commands")
 
 
-class ArgCount:
+def argcount(count):
 	""" Checks if a function got an appropriate amount of args """
-	def __init__(self, function, count):
-		self.function = function
-		self.count = count
+	def decorator(function):
+		def wrapper(*args, **kwargs):
+			if len(args) + len(kwargs) != count:
+				raise BotError("Incorrect number of args.")
+			return function(*args, **kwargs)
+		return wrapper
+	return decorator
 
-	def __call__(self, *args, **kwargs):
-		if len(args) + len(kwargs) == self.count:
-			self.function(*args, **kwargs)
-		else:
-			raise BotError("Incorrect number of args for {}".format(
-				self.function.__name__))
+
+""" Getting a command """
+
+assignment_pattern = regex.compile(r'^\w+ =.+$')
+quote_pattern = regex.compile(r'(?:"(.*?)")')
 
 
 class Variable(str):
 	def __init__(self, name):
-		if name.startswith("$"):
+		if name.startswith("$") and " " not in name:
 			logger.debug("Searching for variable '{}'".format(name))
 			name = name[1:]
 			self.value = database.getVar(name)
@@ -38,24 +40,26 @@ class Variable(str):
 		return self.value
 
 
-def getCommand(text):
-	text = [i for i in text.split(" ") if i]
-	if "=" in text:
-		""" name = value """
-		command = makeVariable
-		name, _, value = text
-		args = name, Variable(value)
-	else:
-		command_name, *args = text
-		command = getCommandFromName(command_name)
-		args = [Variable(a) for a in args]
-	logger.debug("Recieved command {} with args {}".format(command_name, args))
-	return lambda: command(*args)
+def getAssignmentArgs(text):
+	equal_sign = text.index("=")
+	name, value = text.split(equal_sign, count=1)
+	value = extractArgs(value, argcount=1)[0]
+	return name, value
 
 
-def getCommandFromName(name):
-	name = name.lower()
-	if name in availible_commands:
-		return availible_commands[name]
-	else:
-		raise BotError("Command '{}' not found".format(name))
+def extractArgs(text, argcount=None):
+	initial_text = text
+	args = quote_pattern.findall(text)
+	checkQuotes(args)
+	text = text.replace('"', "")
+	for quote in args:
+		text = text.replace(quote, "")
+	args += [a.strip() for a in text.split(" ") if a]
+	args.sort(key=lambda s: initial_text.index(s))
+	args = [Variable(a) for a in args]
+	return args if argcount is None else args[:argcount]
+
+
+def checkQuotes(quotes):
+	if any('"' in q for q in quotes):
+		raise BotError("Double quotes can't be used in values.")
