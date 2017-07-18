@@ -47,8 +47,8 @@ def getCurrentUserId(vk_session):
 	return vk_session("users.get")[0]['id']
 
 
-logger = makeLogger()
 setCurrentDirectory()
+logger = makeLogger()
 vk = makeSession(data_folder + "vk_token.txt")
 my_id = getCurrentUserId(vk)
 database = Database(data_folder + "data.cfg")
