@@ -49,7 +49,7 @@ def getCommand(text):
 		command_name, *args = text
 		command = getCommandFromName(command_name)
 		args = [Variable(a) for a in args]
-	logger.debug("Recieved command {} with args {}".format(command.__name__, args))
+	logger.debug("Recieved command {} with args {}".format(command_name, args))
 	return lambda: command(*args)
 
 
