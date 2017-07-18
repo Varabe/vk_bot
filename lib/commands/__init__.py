@@ -18,7 +18,6 @@ def getCommand(text):
 		args = getAssignmentArgs(text)
 	else:
 		command_name, *args = text.split(" ", 1)
-		args = args or ""
 		command = getCommandFromName(command_name)
 		args = extractArgs(args)
 	logger.debug("Recieved command {} with args {}".format(command_name, args))

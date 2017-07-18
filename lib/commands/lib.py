@@ -48,6 +48,7 @@ def getAssignmentArgs(text):
 
 
 def extractArgs(text, argcount=None):
+	if not text: return []
 	initial_text = text
 	args = quote_pattern.findall(text)
 	checkQuotes(args)
