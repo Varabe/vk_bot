@@ -12,11 +12,13 @@ availible_commands = {
 
 
 def getCommand(text):
+	logger.debug("Getting a command...")
 	if assignment_pattern.search(text):
 		command = makeVariable
 		args = getAssignmentArgs(text)
 	else:
 		command_name, *args = text.split(" ", 1)
+		args = args or ""
 		command = getCommandFromName(command_name)
 		args = extractArgs(args)
 	logger.debug("Recieved command {} with args {}".format(command_name, args))
