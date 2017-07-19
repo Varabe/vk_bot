@@ -3,30 +3,39 @@ from requests import post
 from time import sleep
 import json
 
-from lib.config import sleep_time
-
 
 class Vk:
 	api_url = "https://api.vk.com/method/{}"
 
-	def __init__(self, token, version="5.67"):
-		self.token = token
-		self.version = version
+	def __init__(self, token=None, file_name=None, sleep_time=0.5, **config):
+		self.token = getToken(token, file_name)
+		self.config = config
+		self.sleep_time = sleep_time
 
 	def __call__(self, method, **kwargs):
 		kwargs['access_token'] = self.token
-		kwargs['v'] = self.version
+		kwargs.update(self.config)
 		method = self.api_url.format(method)
 		return self.makeRequest(method, **kwargs)
 
 	def makeRequest(self, method, **kwargs):
-		sleep(sleep_time)
+		sleep(self.sleep_time)
 		try:
 			response = post(method, kwargs)
 		except SSLError as e:
 			raise VkError("No internet connection.") from e
 		else:
 			return getResponseDict(response)
+
+
+def getToken(token_string, file_name):
+	if token_string:
+		return token_string.strip()
+	elif file_name:
+		with open(file_name) as f:
+			return f.read().strip()
+	else:
+		raise VkError("Token not recieved")
 
 
 def getResponseDict(response):
