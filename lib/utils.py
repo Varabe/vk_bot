@@ -5,15 +5,15 @@ from os import chdir
 import logging
 import sys
 
-from lib.config import data_folder
+from lib.config import data_folder as data
 from lib.database import Database
 from lib.vk import Vk
 
 
-def makeLogger():
+def makeLogger(file_name):
 	logger = logging.getLogger('bot')
 	logger.setLevel("DEBUG")
-	fh = logging.FileHandler(data_folder + 'debug.log', mode="w")
+	fh = logging.FileHandler(file_name, mode="w")
 	sh = logging.StreamHandler(stream=sys.stdout)
 	fh_formatter = logging.Formatter('[%(asctime)s] %(name)s: %(message)s')
 	sh_formatter = logging.Formatter('%(name)s: %(message)s')
@@ -22,13 +22,6 @@ def makeLogger():
 	logger.addHandler(fh)
 	logger.addHandler(sh)
 	return logger
-
-
-def makeSession(token_path):
-	""" Возвращает готовую к работе сессию """
-	with open(token_path) as f:
-		token = f.read().strip()
-		return Vk(token)
 
 
 def setCurrentDirectory():
@@ -48,8 +41,11 @@ def getCurrentUserId(vk_session):
 
 
 setCurrentDirectory()
-logger = makeLogger()
-vk = makeSession(data_folder + "vk_token.txt")
+logger = makeLogger(data + 'debug.log')
+logger.debug("Loading utils...")
+
+vk = Vk(file_name=data + "vk_token.txt", v=5.67)
 my_id = getCurrentUserId(vk)
-database = Database(data_folder + "data.cfg")
-logger.debug("Loaded utils")
+database = Database(data + "data.cfg")
+
+logger.debug("All utils loaded")
