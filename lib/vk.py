@@ -1,3 +1,4 @@
+from lib.errors import ResponseError, NO_INTERNET, NO_TOKEN
 from requests.exceptions import SSLError
 from requests import post
 from time import sleep
@@ -23,7 +24,7 @@ class Vk:
 		try:
 			response = post(method, kwargs)
 		except SSLError as e:
-			raise VkError("No internet connection.") from e
+			raise NO_INTERNET from e
 		else:
 			return getResponseDict(response)
 
@@ -35,7 +36,7 @@ def getToken(token_string, file_name):
 		with open(file_name) as f:
 			return f.read().strip()
 	else:
-		raise VkError("Token not recieved")
+		raise NO_TOKEN
 
 
 def getResponseDict(response):
@@ -70,15 +71,3 @@ class LongPollServer:
 		response = getResponseDict(response)
 		self.kwargs['ts'] = response['ts']
 		return response
-
-
-class VkError(Exception):
-	def __init__(self, message):
-		super().__init__(message)
-
-
-class ResponseError(VkError):
-	def __init__(self, error_dict):
-		message = "\nMessage: {}\nParameters: {}".format(
-			error_dict['error_msg'], error_dict['request_params'])
-		super().__init__(message)
