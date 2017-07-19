@@ -51,7 +51,7 @@ def getCurrentUserId(vk_session):
 
 
 setCurrentDirectory()
-logger = makeLogger(data + 'debug.log')
+logger = makeLogger(data_folder + 'debug.log')
 logger.debug("Loading utils...")
 vk, my_id, database = getUtils()
 logger.debug("All utils loaded")

@@ -10,22 +10,6 @@ from lib.utils import vk
 logger = getLogger("bot.errors")
 
 
-class VkError(Exception):
-	def __init__(self, message):
-		super().__init__(message)
-
-
-class ResponseError(VkError):
-	def __init__(self, error_dict):
-		message = "\nMessage: {}\nParameters: {}".format(
-			error_dict['error_msg'], error_dict['request_params'])
-		super().__init__(message)
-
-
-NO_INTERNET = VkError("No internet connection")
-NO_TOKEN = VkError("Token not recieved")
-
-
 def sendErrorMessage(script_name, exception):
 	""" Отправляет текст ошибки на emergency_id """
 	exception = formatError(exception)
