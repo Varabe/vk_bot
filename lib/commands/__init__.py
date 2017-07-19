@@ -18,6 +18,7 @@ availible_commands = {
 def getCommand(text):
 	if assignment_pattern.search(text):
 		command = makeVariable
+		command_name = "makeVariable"
 		args = getAssignmentArgs(text)
 	else:
 		command_name, *args = text.split(" ", 1)
