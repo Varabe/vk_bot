@@ -1,7 +1,6 @@
 """ Оповещение администратора о возникших ошибках """
 
 from traceback import format_exception
-from contextlib import contextmanager
 from logging import getLogger
 
 from lib.config import emergency_id
@@ -11,21 +10,10 @@ from lib.utils import vk
 logger = getLogger("bot.errors")
 
 
-@contextmanager
-def ErrorManager(script_name):
-	""" Упрощенное оповещение об ошибках """
-	try:
-		yield
-	except Exception as e:
-		sendErrorMessage(script_name, e)
-		logger.exception("Exception occured")
-		raise e
-
-
-def sendErrorMessage(name, exception):
+def sendErrorMessage(script_name, exception):
 	""" Отправляет текст ошибки на emergency_id """
 	exception = formatError(exception)
-	message = makeMessage(name, exception)
+	message = makeMessage(script_name, exception)
 	logger.debug("Sending error message")
 	vk("messages.send", user_id=emergency_id, message=message)
 
