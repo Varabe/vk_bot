@@ -26,18 +26,19 @@ class Database(ConfigParser):
 	def save(self):
 		with open(self.path, "w") as f:
 			self.write(f)
+		self.clear()
 		self.read(self.path)
 
 	def getVar(self, name):
 		return self.vars.get(name)
 
 	def setVar(self, name, value):
-		with database_lock:
+		with self.database_lock:
 			self.vars[name] = str(value)
 			self.save()
 
 	def delVar(self, name):
-		with database_lock
+		with self.database_lock:
 			del self.vars[name]
 			self.save()
 
