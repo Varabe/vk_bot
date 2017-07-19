@@ -5,7 +5,7 @@ from os import chdir
 import logging
 import sys
 
-from lib.config import data_folder as data
+from lib.config import data_folder
 from lib.database import Database
 from lib.vk import Vk
 
@@ -36,6 +36,16 @@ def setCurrentDirectory():
 	chdir(path)
 
 
+def getUtils():
+	token_path = data_folder + "vk_token.txt"
+	database_path = data_folder + "data.cfg"
+	vk = Vk(file_name=token_path, v=5.67)
+	database = Database(database_path)
+	my_id = getCurrentUserId(vk)
+	return vk, my_id, database
+
+
+
 def getCurrentUserId(vk_session):
 	return vk_session("users.get")[0]['id']
 
@@ -43,9 +53,5 @@ def getCurrentUserId(vk_session):
 setCurrentDirectory()
 logger = makeLogger(data + 'debug.log')
 logger.debug("Loading utils...")
-
-vk = Vk(file_name=data + "vk_token.txt", v=5.67)
-my_id = getCurrentUserId(vk)
-database = Database(data + "data.cfg")
-
+vk, my_id, database = getUtils()
 logger.debug("All utils loaded")
