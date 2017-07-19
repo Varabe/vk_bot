@@ -26,7 +26,7 @@ def getCommand(text):
 		command = getCommandFromName(command_name)
 		args = extractArgs(args)
 	logger.debug("Recieved command {} with args {}".format(command_name, args))
-	return lambda: command(*args)
+	return lambda user_id: command(user_id, *args)
 
 
 def getCommandFromName(name):

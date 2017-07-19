@@ -17,7 +17,7 @@ class Message:
 	def handle(self):
 		try:
 			command = getCommand(self.text)
-			response_text = command()
+			response_text = command(self.user_id)
 		except BotError as e:
 			response_text = e
 		self.respond(response_text)
