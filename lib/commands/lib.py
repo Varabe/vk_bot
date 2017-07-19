@@ -41,8 +41,7 @@ class Variable(str):
 
 
 def getAssignmentArgs(text):
-	equal_sign = text.index("=")
-	name, value = text.split(equal_sign, maxsplit=1)
+	name, value = text.split("=", maxsplit=1)
 	value = extractArgs(value, argcount=1)[0]
 	return name, value
 
