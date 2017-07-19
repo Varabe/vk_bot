@@ -1,5 +1,6 @@
-from threading import Thread, Event, Lock, active_count
+from threading import Thread, Event, active_count
 from logging import getLogger
+from queue import Queue
 
 from lib.commands.errors import UserExit
 from lib.errors import sendErrorMessage
@@ -37,10 +38,9 @@ class ThreadManager:
 		"""
 		must_have_threads_count = 3
 		self.max_threads = max_count + must_have_threads_count
-		self.event_lock = Lock()
 		self.new_event = Event()
 		self.exception = None
-		self.events = []
+		self.events = Queue()
 
 	def startLongPolling(self, server):
 		Thread(target=self.eventCheckingLoop).start()
@@ -50,7 +50,7 @@ class ThreadManager:
 		""" Handles the events as they appear """
 		EventThread.setTarget(self.handleEvent)
 		while self.exception is None:
-			while self.events:
+			while not self.events.empty():
 				self.checkLastEvent()
 			self.new_event.clear()
 			self.new_event.wait()
@@ -58,15 +58,14 @@ class ThreadManager:
 
 	def checkLastEvent(self):
 		if active_count() < self.max_threads:
-			with self.event_lock:
-				event = self.events.pop(0)
-				if "updates" in event:
-					EventThread(event).start()
+			event = self.events.get()
+			if "updates" in event:
+				EventThread(event).start()
 
 	def longPollingLoop(self, server):
 		while True:
 			response = server.makeLongPollRequest()
-			self.events.append(response)
+			self.events.put(response)
 			self.new_event.set()
 
 	def handleEvent(self, event):
