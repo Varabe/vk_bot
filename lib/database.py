@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+from threading import Lock
 
 
 class Database(ConfigParser):
@@ -19,22 +20,26 @@ class Database(ConfigParser):
 		super().__init__(*args, **kwargs)
 		self.read(path)
 		self.path = path
+		self.database_lock = Lock()
 		self.vars = self['Variables']
 
 	def save(self):
 		with open(self.path, "w") as f:
 			self.write(f)
+		self.read(self.path)
 
 	def getVar(self, name):
 		return self.vars.get(name)
 
 	def setVar(self, name, value):
-		self.vars[name] = str(value)
-		self.save()
+		with database_lock:
+			self.vars[name] = str(value)
+			self.save()
 
 	def delVar(self, name):
-		del self.vars[name]
-		self.save()
+		with database_lock
+			del self.vars[name]
+			self.save()
 
 	def iterVars(self):
 		return iter(self.vars.items())
